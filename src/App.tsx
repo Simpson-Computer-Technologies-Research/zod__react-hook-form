@@ -13,43 +13,50 @@ import {
 } from "./components/ui/Dropdown";
 import Input from "./components/ui/Input";
 import Button from "./components/ui/Button";
+import { useState } from "react";
 
 export default function App() {
+  const [data, setData] = useState({
+    firstName: "",
+    lastName: "",
+    role: "user",
+  });
+
   const schema = z.object({
-    firstName: z.string().min(3).max(25),
+    firstName: z.string().min(2).max(25),
     lastName: z.string().max(25).optional(),
     role: z.enum(["admin", "user"]),
   });
 
-  const form = useForm({
-    defaultValues: {
-      firstName: "John",
-      lastName: "Doe",
-      role: "admin",
-    },
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: data,
     resolver: zodResolver(schema),
   });
-
-  const { register, handleSubmit, setValue, formState, watch } = form;
 
   return (
     <main className="flex min-h-screen w-screen flex-col items-center justify-start p-12">
       <form
         onSubmit={handleSubmit((data) => {
-          console.log(data);
+          setData(data);
         })}
         className="relative flex w-full max-w-96 flex-col items-start justify-start gap-4"
       >
         <Input
-          {...register("firstName")}
+          {...register("firstName", { required: true })}
           placeholder="First Name"
-          errorMessage={formState.errors.firstName?.message}
+          errorMessage={errors.firstName?.message}
         />
 
         <Input
           {...register("lastName")}
           placeholder="Last Name"
-          errorMessage={formState.errors.lastName?.message}
+          errorMessage={errors.lastName?.message}
         />
 
         <DropdownMenu>
@@ -73,6 +80,10 @@ export default function App() {
 
         <Button type="submit">Submit</Button>
       </form>
+
+      <pre className="mt-4 w-full max-w-96 rounded-md bg-gray-200 p-4">
+        {JSON.stringify(data, null, 2)}
+      </pre>
     </main>
   );
 }

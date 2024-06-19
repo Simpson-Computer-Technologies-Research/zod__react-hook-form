@@ -1,11 +1,17 @@
 import { cn } from "@/lib/cn";
 
-export default function Input(
-  props: React.InputHTMLAttributes<HTMLInputElement> & {
-    parentClassName?: string;
-    errorMessage?: string | null;
-  },
-) {
+import React, { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
+
+interface Props
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
+  errorMessage?: string;
+  parentClassName?: string;
+}
+
+const Input: FC<Props> = React.forwardRef((props, ref) => {
   return (
     <div
       className={cn(
@@ -15,6 +21,7 @@ export default function Input(
     >
       <input
         {...props}
+        ref={ref}
         className={cn("w-full rounded-none border px-2 py-2", props.className)}
       />
 
@@ -23,4 +30,6 @@ export default function Input(
       )}
     </div>
   );
-}
+});
+
+export default Input;
